@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE repositories SYSTEM "/dtd/repositories.dtd">
+<repositories xmlns="" version="1.0">
+  <repo quality="experimental" status="unofficial">
+    <name><![CDATA[cyberfox-overlay]]></name>
+    <description lang="en"><![CDATA[Unofficial portage overlay for Gentoo Linux providing ebuilds for Cyberfox]]></description>
+    <homepage>https://github.com/logicoftekk/Cyberfox-Overlay</homepage>
+    <owner type="person">
+      <email>N/A</email>
+      <name><![CDATA[logicoftekk]]></name>
+    </owner>
+    <source type="git">git://github.com/logicoftekk/Cyberfox-Overlay.git</source>
+    <feed>https://github.com/logicoftekk/Cyberfox-Overlay/commits/master.atom</feed>
+  </repo>
+</repositories>
