@@ -7,7 +7,7 @@ If you do not know what `layman` is then please read the [documentation][docs-la
 1. `emerge -av layman`
 2. Modify `/etc/layman/layman.cfg`:
 
-        overlays  : https://raw.github.com/logicoftekk/Cyberfox-Overlay/master/repositories.xml
+overlays  : https://raw.github.com/logicoftekk/Cyberfox-Overlay/master/repositories.xml
 
 3. `layman -L`
 4. `layman -a cyberfox-overlay`
