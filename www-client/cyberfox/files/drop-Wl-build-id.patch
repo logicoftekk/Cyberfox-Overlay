@@ -1,0 +1,34 @@
+--- a/configure.in
++++ b/configure.in
+@@ -1344,14 +1344,6 @@
+                   AC_MSG_RESULT([no])
+                   LDFLAGS=$_SAVE_LDFLAGS)
+ 
+-    AC_MSG_CHECKING([for --build-id option to ld])
+-    _SAVE_LDFLAGS=$LDFLAGS
+-    LDFLAGS="$LDFLAGS -Wl,--build-id"
+-    AC_TRY_LINK(,,AC_MSG_RESULT([yes])
+-                  [NSPR_LDFLAGS="$NSPR_LDFLAGS -Wl,--build-id"],
+-                  AC_MSG_RESULT([no])
+-                  LDFLAGS=$_SAVE_LDFLAGS)
+-
+     AC_MSG_CHECKING([for --ignore-unresolved-symbol option to ld])
+     HAVE_LINKER_SUPPORT_IGNORE_UNRESOLVED=
+     _SAVE_LDFLAGS=$LDFLAGS
+--- a/js/src/configure.in
++++ b/js/src/configure.in
+@@ -1156,14 +1156,6 @@
+                   AC_MSG_RESULT([no])
+                   LDFLAGS=$_SAVE_LDFLAGS)
+ 
+-    AC_MSG_CHECKING([for --build-id option to ld])
+-    _SAVE_LDFLAGS=$LDFLAGS
+-    LDFLAGS="$LDFLAGS -Wl,--build-id"
+-    AC_TRY_LINK(,,AC_MSG_RESULT([yes])
+-                  [NSPR_LDFLAGS="$NSPR_LDFLAGS -Wl,--build-id"],
+-                  AC_MSG_RESULT([no])
+-                  LDFLAGS=$_SAVE_LDFLAGS)
+-
+     # Turn on gcc/clang warnings:
+     # https://gcc.gnu.org/onlinedocs/gcc-4.4.0/gcc/Warning-Options.html
+     #
