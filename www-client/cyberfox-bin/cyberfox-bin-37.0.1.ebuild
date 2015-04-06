@@ -82,7 +82,12 @@ src_install() {
 	insinto ${MOZILLA_FIVE_HOME}/defaults/pref/
 	doins "${FILESDIR}"/local-settings.js
 	# Copy preferences file so we can do a simple rename.
-	cp "${FILESDIR}"/all-gentoo.js  "${D}"${MOZILLA_FIVE_HOME}/all-gentoo.js
+	cp "${FILESDIR}"/gentoo-default-prefs.js  "${D}"${MOZILLA_FIVE_HOME}/gentoo-default-prefs.js
+
+	# Set default path to search for dictionaries.
+	echo "pref(\"spellchecker.dictionary_path\", ${DICTPATH});" \
+		>> ""${D}"${MOZILLA_FIVE_HOME}/gentoo-default-prefs.js" \
+		|| die
 
 	# Create /usr/bin/cyberfox-bin
 	dodir /usr/bin/
