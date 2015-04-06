@@ -279,24 +279,24 @@ src_install() {
         doins -r "${WORKDIR}"/cyberctr/distribution/*
 
 	# Add our default prefs for cyberfox
-	cp "${FILESDIR}"/gentoo-default-prefs.js-1 \
-		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
+	cp "${FILESDIR}"/gentoo-default-prefs.js \
+		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/gentoo-default-prefs.js" \
 		|| die
 
 	# Set default path to search for dictionaries.
 	echo "pref(\"spellchecker.dictionary_path\", ${DICTPATH});" \
-		>> "${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
+		>> "${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/gentoo-default-prefs.js" \
 		|| die
 
 	echo "pref(\"extensions.autoDisableScopes\", 3);" >> \
-		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
+		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/gentoo-default-prefs.js" \
 		|| die
 
 	local plugin
 	use gmp-autoupdate || for plugin in \
 	gmp-gmpopenh264 ; do
 		echo "pref(\"media.${plugin}.autoupdate\", false);" >> \
-			"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
+			"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/gentoo-default-prefs.js" \
 			|| die
 	done
 
@@ -319,11 +319,11 @@ src_install() {
 	# Install icons and .desktop for menu entry
 	for size in ${sizes}; do
 		insinto "/usr/share/icons/hicolor/${size}x${size}/apps"
-		newins "${icon_path}/default${size}.png" "${icon}.png"
+		newins "${icon_path}/default${size}.png" "${icon}.png" || die
 	done
 	# The 128x128 icon has a different name
 	insinto "/usr/share/icons/hicolor/128x128/apps"
-	newins "${icon_path}/mozicon128.png" "${icon}.png"
+	newins "${icon_path}/mozicon128.png" "${icon}.png" || die
 	# Install a 48x48 icon into /usr/share/pixmaps for legacy DEs
 	newicon "${icon_path}/content/icon48.png" "${icon}.png"
 	newmenu "${FILESDIR}/icon/${PN}.desktop" "${PN}.desktop"

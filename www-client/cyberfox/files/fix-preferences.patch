@@ -4,7 +4,7 @@
  
  ; [Default Preferences]
  ; All the pref files must be part of base to prevent migration bugs
-+@RESPATH@/browser/@PREF_DIR@/all-gentoo.js
++@RESPATH@/browser/@PREF_DIR@/gentoo-default-prefs.js
  @RESPATH@/browser/@PREF_DIR@/firefox.js
  @RESPATH@/browser/@PREF_DIR@/firefox-branding.js
  @RESPATH@/greprefs.js
