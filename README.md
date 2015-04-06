@@ -12,7 +12,7 @@ If you do not know what `layman` is then please read the [documentation][docs-la
 3. `layman -L`
 4. `layman -a cyberfox-overlay`
 
-[docs-layman]: https://www.gentoo.org/proj/en/overlays/userguide.xml
+[docs-layman]: https://wiki.gentoo.org/wiki/Project:Overlays/User_Guide
 
 
 ## Available ebuilds
