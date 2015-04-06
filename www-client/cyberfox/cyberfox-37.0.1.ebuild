@@ -267,7 +267,6 @@ src_compile() {
 
 src_install() {
 	MOZILLA_FIVE_HOME="/usr/$(get_libdir)/${PN}"
-	DICTPATH="\"${EPREFIX}/usr/share/myspell\""
 
 	cd "${BUILD_OBJ_DIR}" || die
 
@@ -280,15 +279,6 @@ src_install() {
 
 	# Add our default prefs for cyberfox
 	cp "${FILESDIR}"/gentoo-default-prefs.js \
-		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/gentoo-default-prefs.js" \
-		|| die
-
-	# Set default path to search for dictionaries.
-	echo "pref(\"spellchecker.dictionary_path\", ${DICTPATH});" \
-		>> "${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/gentoo-default-prefs.js" \
-		|| die
-
-	echo "pref(\"extensions.autoDisableScopes\", 3);" >> \
 		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/gentoo-default-prefs.js" \
 		|| die
 

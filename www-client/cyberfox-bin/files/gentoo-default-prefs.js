@@ -12,6 +12,7 @@ defaultPref("browser.urlbar.suggest.history", false);
 defaultPref("browser.urlbar.suggest.openpage", false);
 defaultPref("browser.selfsupport.url", "");
 defaultPref("browser.shell.checkDefaultBrowser", false);
+defaultPref("spellchecker.dictionary_path", "/usr/share/myspell");
 defaultPref("geo.enabled", false);
 defaultPref("media.peerconnection.enabled", false);
 // Preferences that should be reset every session
