@@ -3,7 +3,6 @@ VIRTUALX_REQUIRED="pgo"
 WANT_AUTOCONF="2.1"
 
 MOZCONFIG_OPTIONAL_WIFI=1
-MOZCONFIG_OPTIONAL_JIT="enabled"
 
 inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v5.36 pax-utils fdo-mime autotools virtualx git-r3
 
@@ -26,7 +25,7 @@ ASM_DEPEND=">=dev-lang/yasm-1.1"
 # Mesa 7.10 needed for WebGL + bugfixes
 RDEPEND="
 	>=dev-libs/nss-3.17.4
-	>=dev-libs/nspr-4.10.7
+	>=dev-libs/nspr-4.10.8
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
@@ -99,8 +98,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/hppa_js_configure.patch
 
 	epatch "${FILESDIR}"/${PN}-35.0-gmp-clearkey-sprintf.patch
-	epatch "${FILESDIR}"/${PN}-36.0-disable-ion.patch
 	epatch "${FILESDIR}"/${PN}-36.0-depollute-CONST-from-dtoa.patch
+	epatch "${FILESDIR}"/${PN}-37.0-jemalloc_configure_unbashify.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
 	epatch_user
@@ -213,6 +212,7 @@ src_configure() {
 
 	# Other settings
 	mozconfig_annotate '' --with-default-mozilla-five-home=${MOZILLA_FIVE_HOME}
+	mozconfig_annotate '' --enable-ion
 
 	# Allow for a proper pgo build
 	if use pgo; then
@@ -328,11 +328,7 @@ src_install() {
 	fi
 
 	# Required in order to use plugins and even run cyberfox on hardened.
-	if use jit; then
-		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{cyberfox,cyberfox-bin,plugin-container}
-	else
-		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/plugin-container
-	fi
+	pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{cyberfox,cyberfox-bin,plugin-container}
 
 	if use minimal; then
 		rm -r "${ED}"/usr/include "${ED}${MOZILLA_FIVE_HOME}"/{idl,include,lib,sdk} \
