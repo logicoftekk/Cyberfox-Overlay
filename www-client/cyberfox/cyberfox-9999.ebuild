@@ -88,7 +88,6 @@ src_unpack() {
 src_prepare() {
 	# Apply our patches
 	epatch "${FILESDIR}"/install_dirs.patch
-	epatch "${FILESDIR}"/fix-preferences.patch
 	epatch "${FILESDIR}"/allow_locked_prefs.patch
 	epatch "${FILESDIR}"/avoid_spurious_run_items_in_application_handlers.patch
 	epatch "${FILESDIR}"/add_alpha_defines_in_ipc.patch
@@ -98,7 +97,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/hppa_js_configure.patch
 
 	epatch "${FILESDIR}"/${PN}-35.0-gmp-clearkey-sprintf.patch
-	epatch "${FILESDIR}"/${PN}-36.0-depollute-CONST-from-dtoa.patch
 	epatch "${FILESDIR}"/${PN}-37.0-jemalloc_configure_unbashify.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
@@ -278,15 +276,16 @@ src_install() {
         doins -r "${WORKDIR}"/cyberctr/distribution/*
 
 	# Add our default prefs for cyberfox
-	cp "${FILESDIR}"/gentoo-default-prefs.js \
-		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/gentoo-default-prefs.js" \
-		|| die
+	insinto "${MOZILLA_FIVE_HOME}"/defaults/pref/
+	doins "${FILESDIR}/local-settings.js"
+	insinto "${MOZILLA_FIVE_HOME}"
+	doins "${FILESDIR}/gentoo-default-prefs.js"
 
 	local plugin
 	use gmp-autoupdate || for plugin in \
 	gmp-gmpopenh264 ; do
 		echo "pref(\"media.${plugin}.autoupdate\", false);" >> \
-			"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/gentoo-default-prefs.js" \
+			"${MOZILLA_FIVE_HOME}/gentoo-default-prefs.js" \
 			|| die
 	done
 
