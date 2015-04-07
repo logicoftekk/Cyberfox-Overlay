@@ -3,6 +3,7 @@ lockPref("app.update.auto", false);
 lockPref("app.update.enabled", false);
 lockPref("app.update.autoInstallEnabled", false);
 lockPref("intl.locale.matchOS", true);
+lockPref("extensions.autoDisableScopes", 3);
 // Allow user to change based on needs
 defaultPref("browser.display.use_system_colors", true);
 defaultPref("browser.privatebrowsing.autostart", true);

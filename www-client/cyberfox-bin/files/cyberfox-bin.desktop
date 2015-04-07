@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Cyberfox (bin)
 Comment=Cyberfox Web Browser
-Exec=/usr/bin/cyberfox-bin %u
+Exec=cyberfox-bin %u
 Icon=Cyberfox-bin
 Terminal=false
 Type=Application

@@ -80,9 +80,10 @@ src_install() {
 
 	# Fix prefs that make no sense for a system-wide install
 	insinto ${MOZILLA_FIVE_HOME}/defaults/pref/
-	doins "${FILESDIR}"/local-settings.js
+	doins "${FILESDIR}/local-settings.js"
 	# Copy preferences file so we can do a simple rename.
-	cp "${FILESDIR}"/gentoo-default-prefs.js  "${D}"${MOZILLA_FIVE_HOME}/gentoo-default-prefs.js
+	insinto "${MOZILLA_FIVE_HOME}"
+	doins "${FILESDIR}/gentoo-default-prefs.js"
 
 	# Create /usr/bin/cyberfox-bin
 	dodir /usr/bin/
