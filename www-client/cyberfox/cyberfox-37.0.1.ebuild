@@ -180,11 +180,11 @@ src_configure() {
 	fi
 
 	# Config
-        mozconfig_annotate '' --enable-extensions="${MEXTENSIONS}"
-        mozconfig_annotate '' --disable-mailnews
-        mozconfig_annotate '' --enable-release
-        mozconfig_annotate '' --enable-stdcxx-compat
-        mozconfig_annotate '' --with-pthreads
+	mozconfig_annotate '' --enable-extensions="${MEXTENSIONS}"
+	mozconfig_annotate '' --disable-mailnews
+	mozconfig_annotate '' --enable-release
+	mozconfig_annotate '' --enable-stdcxx-compat
+	mozconfig_annotate '' --with-pthreads
 
 	# Disable unwanted features
 	mozconfig_annotate '' --disable-pay
@@ -278,16 +278,18 @@ src_install() {
 	# Add our default prefs for cyberfox
 	insinto "${MOZILLA_FIVE_HOME}"/defaults/pref/
 	doins "${FILESDIR}/local-settings.js"
-	insinto "${MOZILLA_FIVE_HOME}"
-	doins "${FILESDIR}/gentoo-default-prefs.js"
+	cp "${FILESDIR}/gentoo-default-prefs.js" "${S}/gentoo-default-prefs.js"
 
 	local plugin
 	use gmp-autoupdate || for plugin in \
 	gmp-gmpopenh264 ; do
 		echo "pref(\"media.${plugin}.autoupdate\", false);" >> \
-			"${MOZILLA_FIVE_HOME}/gentoo-default-prefs.js" \
+			"${S}/gentoo-default-prefs.js" \
 			|| die
 	done
+
+	insinto "${MOZILLA_FIVE_HOME}"
+	doins "${S}/gentoo-default-prefs.js"
 
 	MOZ_MAKE_FLAGS="${MAKEOPTS}" \
 	emake DESTDIR="${D}" install
@@ -295,9 +297,9 @@ src_install() {
 	local size sizes icon_path icon name
 	if use bindist; then
 		sizes="16 22 24 32 48 256"
-        	icon_path="${S}/browser/branding/unofficial"
-        	icon="${PN}"
-        	name="Cyberfox"
+		icon_path="${S}/browser/branding/unofficial"
+		icon="${PN}"
+		name="Cyberfox"
 	else
 		sizes="16 22 24 32 48 256"
 		icon_path="${S}/browser/branding/official-linux"
