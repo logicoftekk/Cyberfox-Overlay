@@ -2,8 +2,9 @@ EAPI="5"
 
 inherit eutils multilib pax-utils fdo-mime gnome2-utils nsplugins
 
+
 DESCRIPTION="Cyberfox Web Browser"
-SRC_URI="http://downloads.sourceforge.net/project/cyberfox/Zipped%20Format/Cyberfox-37.0.1.en-US.linux-x86_64.tar.bz2"
+SRC_URI="mirror://sourceforge/cyberfox/Cyberfox-${PV}.en-US.linux-x86_64.tar.bz2"
 HOMEPAGE="http://8pecxstudios.com/cyberfox-web-browser"
 RESTRICT="strip mirror"
 
@@ -22,7 +23,7 @@ RDEPEND="dev-libs/atk
 	>=media-libs/freetype-2.4.10
 	>=x11-libs/cairo-1.10[X]
 	x11-libs/gdk-pixbuf
-	>=x11-libs/gtk+-2.14:2
+	>=x11-libs/gtk+-2.18:2
 	x11-libs/libX11
 	x11-libs/libXcomposite
 	x11-libs/libXdamage
