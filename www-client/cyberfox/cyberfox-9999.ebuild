@@ -221,7 +221,7 @@ src_configure() {
 	mozconfig_annotate '' --disable-mochitests
 	mozconfig_annotate '' --disable-accessibility
 	mozconfig_annotate '' --disable-parental-controls
-	mozconfig_annotate '' --disable-logging
+#	mozconfig_annotate '' --disable-logging
 	mozconfig_annotate '' --disable-elf-hack
 
 	# Other settings
