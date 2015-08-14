@@ -241,6 +241,8 @@ src_configure() {
 	if [[ $(gcc-major-version) -lt 4 ]]; then
 		append-cxxflags -fno-stack-protector
 	fi
+	# workaround for funky/broken upstream configure...
+	emake -f client.mk configure
 }
 
 src_compile() {
@@ -271,7 +273,7 @@ src_compile() {
 	else
 		CC="$(tc-getCC)" CXX="$(tc-getCXX)" LD="$(tc-getLD)" \
 		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL}" \
-		emake -f client.mk
+		emake -f client.mk realbuild
 	fi
 }
 
