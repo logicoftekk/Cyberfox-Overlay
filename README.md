@@ -28,4 +28,4 @@ If you do not know what `layman` is then please read the [documentation][docs-la
 [external-portage]: https://wiki.gentoo.org/wiki/Project:Portage
 [contrib-people]: https://github.com/logicoftekk/Cyberfox-Overlay/graphs/contributors
 [external-gentoo]: https://www.gentoo.org/
-[external-cyberfox]: https://8pecxstudios.com/cyberfox-web-browser
+[external-cyberfox]: https://cyberfox.8pecxstudios.com/
