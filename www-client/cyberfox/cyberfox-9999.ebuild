@@ -6,7 +6,7 @@ MOZCONFIG_OPTIONAL_GTK3=1
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.39 multilib pax-utils fdo-mime autotools virtualx git-r3
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.40 multilib pax-utils fdo-mime autotools virtualx git-r3
 
 DESCRIPTION="Cyberfox Web Browser"
 HOMEPAGE="http://8pecxstudios.com/cyberfox-web-browser"
