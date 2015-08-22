@@ -308,29 +308,22 @@ src_install() {
 	MOZ_MAKE_FLAGS="${MAKEOPTS}" \
 	emake DESTDIR="${D}" install
 	insinto /
-	local size sizes icon_path icon name
+	local size sizes icon_path
+	sizes="16 22 24 32 48 256"
 	if use bindist; then
-		sizes="16 22 24 32 48 256"
 		icon_path="${S}/browser/branding/unofficial"
-		icon="${PN}"
-		name="Cyberfox"
 	else
-		sizes="16 22 24 32 48 256"
 		icon_path="${S}/browser/branding/official-linux"
-		icon="${PN}"
-		name="Cyberfox"
 	fi
 
 	# Install icons and .desktop for menu entry
 	for size in ${sizes}; do
-		insinto "/usr/share/icons/hicolor/${size}x${size}/apps"
-		newins "${icon_path}/default${size}.png" "${icon}.png" || die
+		newicon -s ${size} "${icon_path}/default${size}.png" "${PN}.png" || die
 	done
 	# The 128x128 icon has a different name
-	insinto "/usr/share/icons/hicolor/128x128/apps"
-	newins "${icon_path}/mozicon128.png" "${icon}.png" || die
+	newicon -s 128 "${icon_path}/mozicon128.png" "${PN}.png" || die
 	# Install a 48x48 icon into /usr/share/pixmaps for legacy DEs
-	newicon "${icon_path}/content/icon48.png" "${icon}.png"
+	newicon "${icon_path}/content/icon48.png" "${PN}.png"
 	newmenu "${FILESDIR}/icon/${PN}.desktop" "${PN}.desktop"
 	sed -i -e "s:@NAME@:${name}:" -e "s:@ICON@:${icon}:" \
 		"${ED}/usr/share/applications/${PN}.desktop" || die
