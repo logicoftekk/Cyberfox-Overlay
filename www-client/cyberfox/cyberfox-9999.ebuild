@@ -325,9 +325,6 @@ src_install() {
 	# Install a 48x48 icon into /usr/share/pixmaps for legacy DEs
 	newicon "${icon_path}/content/icon48.png" "${PN}.png"
 	newmenu "${FILESDIR}/icon/${PN}.desktop" "${PN}.desktop"
-	sed -i -e "s:@NAME@:${name}:" -e "s:@ICON@:${icon}:" \
-		"${ED}/usr/share/applications/${PN}.desktop" || die
-
 	# Add StartupNotify=true bug 237317
 	if use startup-notification ; then
 		echo "StartupNotify=true"\

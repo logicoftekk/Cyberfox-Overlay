@@ -62,8 +62,6 @@ src_install() {
 	# Install a 48x48 icon into /usr/share/pixmaps for legacy DEs
 	newicon "${icon_path}/default48.png" "${PN}.png"
 	domenu "${FILESDIR}/${PN}.desktop"
-	sed -i -e "s:@NAME@:${name}:" -e "s:@ICON@:${icon}:" \
-		"${ED}/usr/share/applications/${PN}.desktop" || die
 
 	# Add StartupNotify=true bug 237317
 	if use startup-notification; then
@@ -86,7 +84,7 @@ src_install() {
 	cat <<-EOF >"${D}"/usr/bin/${PN}
 	#!/bin/sh
 	unset LD_PRELOAD
-	LD_LIBRARY_PATH="/opt/cyberfox-bin/"
+	LD_LIBRARY_PATH="/opt/${PN}/"
 	GTK_PATH=/usr/lib/gtk-2.0/
 	exec /opt/${PN}/Cyberfox-bin "\$@"
 	EOF
