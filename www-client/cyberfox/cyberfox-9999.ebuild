@@ -96,8 +96,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/freebsd_jscpucfg.patch
 	epatch "${FILESDIR}"/freebsd_libexecinfo.patch
 	epatch "${FILESDIR}"/hppa_js_configure.patch
-	epatch "${FILESDIR}"/${PN}-35.0-gmp-clearkey-sprintf.patch
-	epatch "${FILESDIR}"/${PN}-37.0-jemalloc_configure_unbashify.patch
+	epatch "${FILESDIR}"/gmp-clearkey-sprintf.patch
+	epatch "${FILESDIR}"/jemalloc_configure_unbashify.patch
+	epatch "${FILESDIR}"/dont-hardcode-libc-soname-in-python.patch
+	epatch "${FILESDIR}"/freetype-system-header.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
 	epatch_user
