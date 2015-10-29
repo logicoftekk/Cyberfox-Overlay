@@ -4,7 +4,7 @@ inherit eutils multilib pax-utils fdo-mime gnome2-utils nsplugins
 
 
 DESCRIPTION="Cyberfox Web Browser"
-SRC_URI="mirror://sourceforge/cyberfox/Cyberfox-${PV}.en-US.linux-x86_64.tar.bz2"
+SRC_URI="mirror://sourceforge/project/cyberfox/Zipped%20Format/Cyberfox-${PV}.en-US.linux-x86_64.tar.bz2"
 HOMEPAGE="http://8pecxstudios.com/cyberfox-web-browser"
 RESTRICT="strip mirror"
 
@@ -38,8 +38,8 @@ RDEPEND="dev-libs/atk
 
 QA_PREBUILT="
 	opt/${PN}/*.so
-	opt/${PN}/${PN}
-	opt/${PN}/${PN/-bin}
+	opt/${PN}/Cyberfox
+	opt/${PN}/Cyberfox-bin}
 	opt/${PN}/webapprt-stub
 	opt/${PN}/plugin-container
 "
@@ -99,7 +99,7 @@ src_install() {
 	share_plugins_dir
 
 	# Required in order to use plugins and even run firefox on hardened.
-	pax-mark mr "${ED}"/${MOZILLA_FIVE_HOME}/{cyberfox,cyberfox-bin,plugin-container}
+	pax-mark mr "${ED}"/${MOZILLA_FIVE_HOME}/{Cyberfox,Cyberfox-bin,plugin-container}
 }
 
 pkg_preinst() {
