@@ -1,0 +1,25 @@
+--- a/gfx/layers/ipc/ShadowLayerUtilsX11.cpp
++++ b/gfx/layers/ipc/ShadowLayerUtilsX11.cpp
+@@ -70,19 +70,21 @@ SurfaceDescriptorX11::SurfaceDescriptorX
+ {
+   const XRenderPictFormat *pictFormat = aSurf->XRenderFormat();
+   if (pictFormat) {
+     mFormat = pictFormat->id;
+   } else {
+     mFormat = cairo_xlib_surface_get_visual(aSurf->CairoSurface())->visualid;
+   }
+ 
++#ifdef GL_PROVIDER_GLX
+   if (aForwardGLX) {
+     mGLXPixmap = aSurf->GetGLXPixmap();
+   }
++#endif
+ }
+ 
+ SurfaceDescriptorX11::SurfaceDescriptorX11(Drawable aDrawable, XID aFormatID,
+                                            const gfx::IntSize& aSize)
+   : mId(aDrawable)
+   , mFormat(aFormatID)
+   , mSize(aSize)
+   , mGLXPixmap(None)
+
