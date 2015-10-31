@@ -6,10 +6,9 @@ EAPI="5"
 
 inherit eutils multilib pax-utils fdo-mime gnome2-utils nsplugins
 
-
 DESCRIPTION="Cyberfox Web Browser"
 SRC_URI="mirror://sourceforge/project/cyberfox/Zipped%20Format/Cyberfox-${PV}.en-US.linux-x86_64.tar.bz2"
-HOMEPAGE="http://8pecxstudios.com/cyberfox-web-browser"
+HOMEPAGE="https://cyberfox.8pecxstudios.com/"
 RESTRICT="strip mirror"
 
 KEYWORDS="-* ~amd64"
@@ -43,7 +42,7 @@ RDEPEND="dev-libs/atk
 QA_PREBUILT="
 	opt/${PN}/*.so
 	opt/${PN}/Cyberfox
-	opt/${PN}/Cyberfox-bin}
+	opt/${PN}/Cyberfox-bin
 	opt/${PN}/webapprt-stub
 	opt/${PN}/plugin-container
 "
