@@ -68,12 +68,12 @@ src_install() {
 
 	# Add StartupNotify=true bug 237317
 	if use startup-notification; then
-		echo "StartupNotify=true" >> "${D}/usr/share/applications/${PN}.desktop" || die
+		echo "StartupNotify=true" >> "${ED}/usr/share/applications/${PN}.desktop" || die
 	fi
 
 	# Install Cyberfox in /opt
 	dodir ${MOZILLA_FIVE_HOME%/*}
-	mv "${S}" "${D}"${MOZILLA_FIVE_HOME} || die
+	mv "${S}" "${ED}"${MOZILLA_FIVE_HOME} || die
 
 	# Fix prefs that make no sense for a system-wide install
 	insinto ${MOZILLA_FIVE_HOME}/defaults/pref/
@@ -84,7 +84,7 @@ src_install() {
 
 	# Create /usr/bin/cyberfox-bin
 	dodir /usr/bin/
-	cat <<-EOF >"${D}"/usr/bin/${PN}
+	cat <<-EOF >"${ED}"/usr/bin/${PN}
 	#!/bin/sh
 	unset LD_PRELOAD
 	LD_LIBRARY_PATH="/opt/${PN}/"
