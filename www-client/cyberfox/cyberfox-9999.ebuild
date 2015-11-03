@@ -19,7 +19,7 @@ KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linu
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="bindist egl hardened +minimal neon pgo selinux +gmp-autoupdate test"
+IUSE="bindist egl hardened +minimal neon pgo unity selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
@@ -105,6 +105,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/dont-hardcode-libc-soname-in-python.patch
 	epatch "${FILESDIR}"/freetype-system-header.patch
 	epatch "${FILESDIR}"/egl.patch
+
+	if use unity ; then
+		epatch "${FILESDIR}"/unity-menubar.patch
+	fi
 
 	# Allow user to apply any additional patches without modifing ebuild
 	epatch_user
