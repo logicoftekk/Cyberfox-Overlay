@@ -7,14 +7,16 @@ EAPI="5"
 inherit eutils multilib pax-utils fdo-mime gnome2-utils nsplugins
 
 DESCRIPTION="Cyberfox Web Browser"
-SRC_URI="mirror://sourceforge/project/cyberfox/Zipped%20Format/Cyberfox-${PV}.en-US.linux-x86_64.tar.bz2"
+SRC_URI="
+	!unity?	( mirror://sourceforge/project/cyberfox/Zipped%20Format/Cyberfox-${PV}.en-US.linux-x86_64.tar.bz2 )
+	unity?	( mirror://sourceforge/project/cyberfox/Zipped%20Format/Cyberfox-${PV}.en-US.linux-x86_64-Unity-Edition.tar.bz2 )"
 HOMEPAGE="https://cyberfox.8pecxstudios.com/"
 RESTRICT="strip mirror"
 
 KEYWORDS="-* ~amd64"
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="selinux startup-notification"
+IUSE="selinux startup-notification unity"
 
 DEPEND="app-arch/unzip"
 RDEPEND="dev-libs/atk
