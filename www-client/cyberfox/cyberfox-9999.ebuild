@@ -23,7 +23,7 @@ IUSE="bindist egl hardened +minimal neon pgo unity selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
-SRC_URI=""
+SRC_URI="unity?	( mirror://ubuntu/pool/main/f/firefox/firefox_42.0+build2-0ubuntu1.debian.tar.xz )"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
 
@@ -88,27 +88,19 @@ src_unpack() {
 	git-r3_checkout https://github.com/InternalError503/CyberCTR.git "${WORKDIR}"/cyberctr
 	git-r3_fetch
 	git-r3_checkout
+	if [ "${A}" != "" ]; then
+		unpack ${A}
+	fi
 }
 
 src_prepare() {
 	# Apply our patches
-	epatch "${FILESDIR}"/install_dirs.patch
-	epatch "${FILESDIR}"/allow_locked_prefs.patch
-	epatch "${FILESDIR}"/avoid_spurious_run_items_in_application_handlers.patch
-	epatch "${FILESDIR}"/add_alpha_defines_in_ipc.patch
-	epatch "${FILESDIR}"/drop-Wl-build-id.patch
-	epatch "${FILESDIR}"/freebsd_jscpucfg.patch
-	epatch "${FILESDIR}"/freebsd_libexecinfo.patch
-	epatch "${FILESDIR}"/hppa_js_configure.patch
-	epatch "${FILESDIR}"/gmp-clearkey-sprintf.patch
-	epatch "${FILESDIR}"/jemalloc_configure_unbashify.patch
-	epatch "${FILESDIR}"/dont-hardcode-libc-soname-in-python.patch
-	epatch "${FILESDIR}"/freetype-system-header.patch
-	epatch "${FILESDIR}"/egl.patch
-
 	if use unity ; then
-		epatch "${FILESDIR}"/unity-menubar.patch
+		epatch "${WORKDIR}/debian/patches/unity-menubar.patch"
 	fi
+
+	EPATCH_SUFFIX="patch" EPATCH_FORCE="yes" \
+	epatch "${FILESDIR}"
 
 	# Allow user to apply any additional patches without modifing ebuild
 	epatch_user
