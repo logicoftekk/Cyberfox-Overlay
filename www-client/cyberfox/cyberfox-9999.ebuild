@@ -23,14 +23,14 @@ IUSE="bindist egl hardened +minimal neon pgo unity selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
-SRC_URI="unity?	( mirror://ubuntu/pool/main/f/firefox/firefox_42.0+build2-0ubuntu1.debian.tar.xz )"
+SRC_URI="unity?	( mirror://ubuntu/pool/main/f/firefox/firefox_43.0+build1-0ubuntu1.debian.tar.xz )"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
 
 # Mesa 7.10 needed for WebGL + bugfixes
 RDEPEND="
 	>=dev-libs/nss-3.20.1
-	>=dev-libs/nspr-4.10.10
+	>=dev-libs/nspr-4.10.10-r1
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
@@ -161,6 +161,9 @@ src_configure() {
 
 	mozconfig_init
 	mozconfig_config
+
+	# We want rpath support to prevent unneeded hacks on different libc variants
+	append-ldflags -Wl,-rpath="${MOZILLA_FIVE_HOME}"
 
 	# It doesn't compile on alpha without this LDFLAGS
 	use alpha && append-ldflags "-Wl,--no-relax"
@@ -345,10 +348,11 @@ src_install() {
 			|| die "Failed to remove sdk and headers"
 	fi
 
-	# revdep-rebuild entry
-	insinto /etc/revdep-rebuild
-	echo "SEARCH_DIRS_MASK=${MOZILLA_FIVE_HOME}" >> ${T}/10${PN}
-	doins "${T}"/10${PN} || die
+	# very ugly hack to make firefox not sigbus on sparc
+	# FIXME: is this still needed??
+	use sparc && { sed -e 's/Firefox/FirefoxGentoo/g' \
+					 -i "${ED}/${MOZILLA_FIVE_HOME}/application.ini" \
+					|| die "sparc sed failed"; }
 }
 
 pkg_preinst() {
