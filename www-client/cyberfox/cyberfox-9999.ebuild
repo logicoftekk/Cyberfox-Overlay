@@ -217,7 +217,6 @@ src_configure() {
 
 	# Other settings
 	mozconfig_annotate '' --with-default-mozilla-five-home=${MOZILLA_FIVE_HOME}
-	mozconfig_annotate '' --enable-ion
 
 	# Allow for a proper pgo build
 	if use pgo; then
