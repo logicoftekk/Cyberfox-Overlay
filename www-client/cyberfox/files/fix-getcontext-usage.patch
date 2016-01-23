@@ -1,0 +1,32 @@
+From 83741a38b3c7837dfe679ccbbdf2c5b048ee58a2 Mon Sep 17 00:00:00 2001
+From: "Jory A. Pratt" <anarchy@gentoo.org>
+Date: Sun, 3 Jan 2016 20:00:55 -0600
+Subject: [PATCH] getcontext is only avaliable on GLIBC based system, it is not
+ avaliable on other libc systems at this time.
+
+Signed-off-by: Jory A. Pratt <anarchy@gentoo.org>
+---
+ tools/profiler/core/platform-linux.cc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/tools/profiler/core/platform-linux.cc b/tools/profiler/core/platform-linux.cc
+index caf7326..200d92c 100644
+--- a/tools/profiler/core/platform-linux.cc
++++ b/tools/profiler/core/platform-linux.cc
+@@ -710,11 +710,13 @@ void OS::Startup() {
+ void TickSample::PopulateContext(void* aContext)
+ {
+   MOZ_ASSERT(aContext);
++#if defined(__GLIBC__)
+   ucontext_t* pContext = reinterpret_cast<ucontext_t*>(aContext);
+   if (!getcontext(pContext)) {
+     context = pContext;
+     SetSampleContext(this, aContext);
+   }
++#endif
+ }
+ 
+ void OS::SleepMicro(int microseconds)
+-- 
+2.6.4
+
