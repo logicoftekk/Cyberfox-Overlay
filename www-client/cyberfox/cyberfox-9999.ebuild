@@ -23,7 +23,7 @@ IUSE="bindist egl hardened +minimal pgo unity selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
-SRC_URI="unity?	( mirror://ubuntu/pool/main/f/firefox/firefox_43.0+build1-0ubuntu1.debian.tar.xz )"
+SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_43.0.4+build3-0ubuntu1.debian.tar.xz )"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
 
