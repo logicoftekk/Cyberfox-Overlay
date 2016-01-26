@@ -23,7 +23,7 @@ IUSE="bindist egl hardened +minimal pgo unity selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
-SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_43.0.4+build3-0ubuntu1.debian.tar.xz )"
+SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_44.0+build3-0ubuntu2.debian.tar.xz )"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
 
@@ -190,7 +190,6 @@ src_configure() {
 	mozconfig_annotate '' --enable-extensions="${MEXTENSIONS}"
 	mozconfig_annotate '' --disable-mailnews
 	mozconfig_annotate '' --enable-release
-	mozconfig_annotate '' --enable-stdcxx-compat
 	mozconfig_annotate '' --with-pthreads
 
 	# Disable unwanted features
@@ -212,7 +211,6 @@ src_configure() {
 	mozconfig_annotate '' --disable-mochitests
 	mozconfig_annotate '' --disable-accessibility
 	mozconfig_annotate '' --disable-parental-controls
-#	mozconfig_annotate '' --disable-logging
 	mozconfig_annotate '' --disable-elf-hack
 
 	# Other settings
