@@ -10,7 +10,7 @@ MOZCONFIG_OPTIONAL_GTK3=1
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.42 multilib pax-utils fdo-mime autotools virtualx git-r3
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.44 multilib pax-utils fdo-mime autotools virtualx git-r3
 
 DESCRIPTION="Cyberfox Web Browser"
 HOMEPAGE="http://8pecxstudios.com/cyberfox-web-browser"
@@ -325,11 +325,6 @@ src_install() {
 		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{cyberfox,cyberfox-bin,plugin-container}
 	else
 		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/plugin-container
-	fi
-
-	if use minimal; then
-		rm -r "${ED}"/usr/include "${ED}${MOZILLA_FIVE_HOME}"/{idl,include,lib,sdk} \
-			|| die "Failed to remove sdk and headers"
 	fi
 
 	# very ugly hack to make firefox not sigbus on sparc
