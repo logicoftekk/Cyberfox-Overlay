@@ -23,14 +23,14 @@ IUSE="bindist egl hardened +minimal pgo unity selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
-SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_44.0+build3-0ubuntu2.debian.tar.xz )"
+SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_44.0.1+build2-0ubuntu1.debian.tar.xz )"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
 
 # Mesa 7.10 needed for WebGL + bugfixes
 RDEPEND="
-	>=dev-libs/nss-3.20.1
-	>=dev-libs/nspr-4.10.10-r1
+	>=dev-libs/nss-3.21
+	>=dev-libs/nspr-4.11
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
