@@ -1,5 +1,5 @@
---- a/mozilla-release/gfx/skia/skia/src/core/SkUtilsArm.cpp
-+++ b/mozilla-release/gfx/skia/skia/src/core/SkUtilsArm.cpp
+--- a/gfx/skia/skia/src/core/SkUtilsArm.cpp
++++ b/gfx/skia/skia/src/core/SkUtilsArm.cpp
 @@ -109,7 +109,7 @@
  
      do {

@@ -1,0 +1,10 @@
+--- a/media/mtransport/third_party/nICEr/src/stun/stun_client_ctx.c	2016-02-25 18:02:01.000000000 -0500
++++ b/media/mtransport/third_party/nICEr/src/stun/stun_client_ctx.c	2016-03-07 14:14:25.911661203 -0500
+@@ -37,6 +37,7 @@
+ #include <string.h>
+ 
+ #include <nr_api.h>
++#include <math.h>
+ #include "stun.h"
+ #include "async_timer.h"
+ #include "registry.h"

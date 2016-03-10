@@ -1,6 +1,7 @@
---- a/config/baseconfig.mk
-+++ b/config/baseconfig.mk
-@@ -1,16 +1,16 @@
+diff -urN a/config/baseconfig.mk b/config/baseconfig.mk
+--- a/config/baseconfig.mk	2012-09-19 08:53:16.000000000 -0500
++++ b/config/baseconfig.mk	2012-09-24 14:50:06.839354619 -0500
+@@ -1,14 +1,14 @@
  # This file is normally included by autoconf.mk, but it is also used
  # directly in python/mozbuild/mozbuild/base.py for gmake validation.
  # We thus use INCLUDED_AUTOCONF_MK to enable/disable some parts depending
@@ -9,15 +10,13 @@
 -idldir = $(datadir)/idl/$(MOZ_APP_NAME)-$(MOZ_APP_VERSION)
 -installdir = $(libdir)/$(MOZ_APP_NAME)-$(MOZ_APP_VERSION)
 -sdkdir = $(libdir)/$(MOZ_APP_NAME)-devel-$(MOZ_APP_VERSION)
-+includedir := $(includedir)/cyberfox
-+idldir = $(includedir)/idl/cyberfox
-+installdir = $(libdir)/cyberfox
-+sdkdir = $(libdir)/cyberfox
- ifndef TOP_DIST
- TOP_DIST = dist
- endif
- ifneq (,$(filter /%,$(TOP_DIST)))
- DIST = $(TOP_DIST)
- else
++includedir := $(includedir)/$(MOZ_APP_NAME)
++idldir = $(includedir)/idl/$(MOZ_APP_NAME)
++installdir = $(libdir)/$(MOZ_APP_NAME)
++sdkdir = $(libdir)/$(MOZ_APP_NAME)
  ifeq (.,$(DEPTH))
- DIST = $(TOP_DIST)
+ DIST = dist
+ else
+ DIST = $(DEPTH)/dist
+ endif
+ 
