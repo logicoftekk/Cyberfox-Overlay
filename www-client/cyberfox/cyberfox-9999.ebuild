@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -11,7 +11,7 @@ MOZCONFIG_OPTIONAL_GTK2ONLY=1
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.46 multilib pax-utils fdo-mime autotools virtualx git-r3
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.47 multilib pax-utils fdo-mime autotools virtualx git-r3
 
 DESCRIPTION="Cyberfox Web Browser"
 HOMEPAGE="http://8pecxstudios.com/cyberfox-web-browser"
@@ -24,23 +24,20 @@ IUSE="bindist hardened pgo unity selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
-SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_46.0.1+build1-0ubuntu1.debian.tar.xz )"
+SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_47.0+build3-0ubuntu1.debian.tar.xz )"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
 
 # Mesa 7.10 needed for WebGL + bugfixes
 RDEPEND="
-	>=dev-libs/nss-3.22.3
+	>=dev-libs/nss-3.23
 	>=dev-libs/nspr-4.12
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
-	pgo? (
-		>=sys-devel/gcc-4.5 )
-	amd64? ( ${ASM_DEPEND}
-		virtual/opengl )
-	x86? ( ${ASM_DEPEND}
-		virtual/opengl )"
+	pgo? ( >=sys-devel/gcc-4.5 )
+	amd64? ( ${ASM_DEPEND} virtual/opengl )
+	x86? ( ${ASM_DEPEND} virtual/opengl )"
 
 QA_PRESTRIPPED="usr/lib*/${PN}/cyberfox"
 
@@ -134,11 +131,14 @@ src_prepare() {
 	sed 's@\(xargs rm\)$@\1 -f@' \
 		-i "${S}"/toolkit/mozapps/installer/packager.mk || die
 
-	eautoreconf
+	# Autotools configure is now called old-configure.in
+	# This works because there is still a configure.in that happens to be for the
+	# shell wrapper configure script
+	eautoreconf old-configure.in
 
 	# Must run autoconf in js/src
 	cd "${S}"/js/src || die
-	eautoconf
+	eautoconf old-configure.in
 
 	# Need to update jemalloc's configure
 	cd "${S}"/memory/jemalloc/src || die
@@ -146,7 +146,6 @@ src_prepare() {
 }
 
 src_configure() {
-	MOZILLA_FIVE_HOME="/usr/$(get_libdir)/${PN}"
 	MEXTENSIONS="default"
 	# Google API keys (see http://www.chromium.org/developers/how-tos/api-keys)
 	# Note: These are for Gentoo Linux use ONLY. For your own distribution, please
@@ -161,9 +160,6 @@ src_configure() {
 
 	mozconfig_init
 	mozconfig_config
-
-	# We want rpath support to prevent unneeded hacks on different libc variants
-	append-ldflags -Wl,-rpath="${MOZILLA_FIVE_HOME}"
 
 	# It doesn't compile on alpha without this LDFLAGS
 	use alpha && append-ldflags "-Wl,--no-relax"
@@ -215,9 +211,6 @@ src_configure() {
 	mozconfig_annotate '' --disable-parental-controls
 	mozconfig_annotate '' --disable-elf-hack
 
-	# Other settings
-	mozconfig_annotate '' --with-default-mozilla-five-home=${MOZILLA_FIVE_HOME}
-
 	# Allow for a proper pgo build
 	if use pgo; then
 		echo "mk_add_options PROFILE_GEN_SCRIPT='\$(PYTHON) \$(OBJDIR)/_profile/pgo/profileserver.py'" >> "${S}"/.mozconfig
@@ -258,27 +251,23 @@ src_compile() {
 		shopt -u nullglob
 		addpredict "${cards}"
 
-		CC="$(tc-getCC)" CXX="$(tc-getCXX)" LD="$(tc-getLD)" \
 		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
 		virtx emake -f client.mk profiledbuild || die "virtx emake failed"
 	else
-		CC="$(tc-getCC)" CXX="$(tc-getCXX)" LD="$(tc-getLD)" \
 		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
 		emake -f client.mk realbuild
 	fi
 }
 
 src_install() {
-	MOZILLA_FIVE_HOME="/usr/$(get_libdir)/${PN}"
-
 	cd "${BUILD_OBJ_DIR}" || die
 
 	# Pax mark xpcshell for hardened support, only used for startupcache creation.
 	pax-mark m "${BUILD_OBJ_DIR}"/dist/bin/xpcshell
 
 	# install CyberCTR
-	insinto "${MOZILLA_FIVE_HOME}"/distribution
-        doins -r "${WORKDIR}"/cyberctr/distribution/*
+	insinto "${MOZILLA_FIVE_HOME}"/distribution/bundles
+        doins -r "${WORKDIR}"/cyberctr/*
 
 	# Add our default prefs for cyberfox
 	insinto "${MOZILLA_FIVE_HOME}"/defaults/pref/
