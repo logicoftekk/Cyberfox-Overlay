@@ -23,33 +23,18 @@ diff -ru mozilla-release/toolkit.orig/crashreporter/google-breakpad/src/common/s
  using std::vector;
  
  namespace google_breakpad {
-diff -ru mozilla-release/toolkit.orig/crashreporter/google-breakpad/src/common/stabs_reader.h mozilla-release/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h
---- mozilla-release/toolkit.orig/crashreporter/google-breakpad/src/common/stabs_reader.h	2014-03-15 05:19:36.000000000 +0000
-+++ mozilla-release/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h	2014-04-17 10:24:33.793431933 +0000
-@@ -53,9 +53,10 @@
- #include <config.h>
- #endif
+diff -u a/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h b/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h
+--- a/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h	2016-05-12 13:05:08.000000000 -0400
++++ b/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h	2016-06-01 11:45:52.754258957 -0400
+@@ -55,7 +55,7 @@
  
--#ifdef HAVE_A_OUT_H
-+#if 0
- #include <a.out.h>
- #endif
-+
  #ifdef HAVE_MACH_O_NLIST_H
  #include <mach-o/nlist.h>
+-#elif defined(HAVE_A_OUT_H)
++#elif 0
+ #include <a.out.h>
  #endif
-diff -ru mozilla-release/toolkit.orig/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h mozilla-release/toolkit/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h
---- mozilla-release/toolkit.orig/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h	2014-03-15 05:19:37.000000000 +0000
-+++ mozilla-release/toolkit/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h	2014-04-17 10:24:33.793431933 +0000
-@@ -2813,7 +2813,7 @@
-     LSS_INLINE _syscall6(void*, mmap,              void*, s,
-                          size_t,                   l, int,               p,
-                          int,                      f, int,               d,
--                         __off64_t,                o)
-+                         off_t,                    o)
- 
-     LSS_INLINE _syscall4(int, newfstatat,         int,   d,
-                          const char *,            p,
+
 diff -ru mozilla-release/toolkit.orig/mozapps/update/common/updatedefines.h mozilla-release/toolkit/mozapps/update/common/updatedefines.h
 --- mozilla-release/toolkit.orig/mozapps/update/common/updatedefines.h	2014-03-15 05:19:37.000000000 +0000
 +++ mozilla-release/toolkit/mozapps/update/common/updatedefines.h	2014-04-17 10:24:33.793431933 +0000
@@ -92,3 +77,4 @@ diff -ru mozilla-release/toolkit.orig/xre/nsSigHandlers.cpp mozilla-release/tool
  #include "prthread.h"
  #include "plstr.h"
  #include "prenv.h"
+ 

@@ -1,24 +1,35 @@
---- a/modules/libpref/prefapi.cpp
-+++ b/modules/libpref/prefapi.cpp
-@@ -1006,11 +1006,14 @@ void PREF_ReaderCallback(void       *closure,
+Allow .js preference files to set locked prefs with
+ lockPref()
+
+diff -u a/modules/libpref/prefapi.cpp b/modules/libpref/prefapi.cpp
+--- a/modules/libpref/prefapi.cpp	2016-05-12 13:05:06.000000000 -0400
++++ b/modules/libpref/prefapi.cpp	2016-06-01 10:41:23.629568981 -0400
+@@ -947,7 +947,8 @@
                           PrefValue   value,
                           PrefType    type,
                           bool        isDefault,
 -                         bool        isStickyDefault)
 +                         bool        isStickyDefault,
 +                         bool        isLocked)
+ 
  {
-     uint32_t flags = isDefault ? kPrefSetDefault : kPrefForceSet;
-     if (isDefault && isStickyDefault) {
-         flags |= kPrefStickyDefault;
+     uint32_t flags = 0;
+@@ -960,4 +961,6 @@
+         flags |= kPrefForceSet;
      }
      pref_HashPref(pref, value, type, flags);
 +    if (isLocked)
 +        PREF_LockPref(pref, true);
  }
+diff -u a/modules/libpref/prefapi.h b/modules/libpref/prefapi.h
 --- a/modules/libpref/prefapi.h
 +++ b/modules/libpref/prefapi.h
-@@ -186,7 +186,8 @@ void PREF_ReaderCallback( void *closure,
+@@ -181,14 +181,15 @@ nsresult PREF_UnregisterCallback( const char* domain,
+ /*
+  * Used by nsPrefService as the callback function of the 'pref' parser
+  */
+ void PREF_ReaderCallback( void *closure,
+                           const char *pref,
                            PrefValue   value,
                            PrefType    type,
                            bool        isDefault,
@@ -28,9 +39,12 @@
  
  #ifdef __cplusplus
  }
---- a/modules/libpref/prefread.cpp
-+++ b/modules/libpref/prefread.cpp
-@@ -43,6 +43,7 @@ enum {
+ #endif
+ #endif
+diff -u a/modules/libpref/prefread.cpp b/modules/libpref/prefread.cpp
+--- a/modules/libpref/prefread.cpp	2016-05-12 13:05:06.000000000 -0400
++++ b/modules/libpref/prefread.cpp	2016-06-01 10:41:23.629568981 -0400
+@@ -43,6 +43,7 @@
  #define BITS_PER_HEX_DIGIT      4
  
  static const char kUserPref[] = "user_pref";
@@ -38,7 +52,7 @@
  static const char kPref[] = "pref";
  static const char kPrefSticky[] = "sticky_pref";
  static const char kTrue[] = "true";
-@@ -131,7 +132,7 @@ pref_DoCallback(PrefParseState *ps)
+@@ -131,7 +132,7 @@
          break;
      }
      (*ps->reader)(ps->closure, ps->lb, value, ps->vtype, ps->fdefault,
@@ -47,40 +61,44 @@
      return true;
  }
  
-@@ -191,6 +192,7 @@ PREF_ParseBuf(PrefParseState *ps, const char *buf, int bufLen)
-                 ps->vtype = PREF_INVALID;
+@@ -191,6 +192,7 @@
+                 ps->vtype = PrefType::Invalid;
                  ps->fdefault = false;
                  ps->fstickydefault = false;
 +                ps->flock = false;
              }
              switch (c) {
              case '/':       /* begin comment block or line? */
-@@ -202,8 +204,10 @@ PREF_ParseBuf(PrefParseState *ps, const char *buf, int bufLen)
+@@ -202,10 +204,13 @@
              case 'u':       /* indicating user_pref */
-             case 'p':       /* indicating pref */
              case 's':       /* indicating sticky_pref */
+             case 'p':       /* indicating pref */
 +            case 'l':       /* indicating lockPref */
-                 ps->smatch = (c == 'u' ? kUserPref :
--                             (c == 's' ? kPrefSticky : kPref));
-+                             (c == 's' ? kPrefSticky :
-+                             (c == 'p' ? kPref : kLockPref)));
-                 ps->sindex = 1;
-                 ps->nextstate = PREF_PARSE_UNTIL_OPEN_PAREN;
-                 state = PREF_PARSE_MATCH_STRING;
-@@ -247,8 +251,9 @@ PREF_ParseBuf(PrefParseState *ps, const char *buf, int bufLen)
+                 if (c == 'u') {
+                   ps->smatch = kUserPref;
+                 } else if (c == 's') {
+                   ps->smatch = kPrefSticky;
++                } else if (c == 'l') {
++                  ps->smatch = kLockPref;
+                 } else {
+                   ps->smatch = kPref;
+                 }
+@@ -252,8 +257,10 @@
          /* name parsing */
          case PREF_PARSE_UNTIL_NAME:
              if (c == '\"' || c == '\'') {
 -                ps->fdefault = (ps->smatch == kPref || ps->smatch == kPrefSticky);
-+                ps->fdefault = (ps->smatch == kPref || ps->smatch == kPrefSticky || ps->smatch == kLockPref);
++                ps->fdefault = (ps->smatch == kPref || ps->smatch == kPrefSticky
++                                || ps->smatch == kLockPref);
                  ps->fstickydefault = (ps->smatch == kPrefSticky);
 +                ps->flock = (ps->smatch == kLockPref);
                  ps->quotechar = c;
                  ps->nextstate = PREF_PARSE_UNTIL_COMMA; /* return here when done */
                  state = PREF_PARSE_QUOTED_STRING;
---- a/modules/libpref/prefread.h
-+++ b/modules/libpref/prefread.h
-@@ -34,7 +34,8 @@ typedef void (*PrefReader)(void       *closure,
+diff -u a/modules/libpref/prefread.h b/modules/libpref/prefread.h
+--- a/modules/libpref/prefread.h	2016-05-12 13:05:06.000000000 -0400
++++ b/modules/libpref/prefread.h	2016-06-01 10:41:23.629568981 -0400
+@@ -34,7 +34,8 @@
                             PrefValue   val,
                             PrefType    type,
                             bool        defPref,
@@ -90,9 +108,9 @@
  
  /* structure fields are private */
  typedef struct PrefParseState {
-@@ -56,6 +57,7 @@ typedef struct PrefParseState {
+@@ -56,6 +57,7 @@
      PrefType    vtype;      /* PREF_STRING,INT,BOOL          */
-     bool        fdefault;   /* true if (default) pref     */
+     bool        fdefault;   /* true if (default) pref        */
      bool        fstickydefault; /* true if (sticky) pref     */
 +    bool        flock;      /* true if pref to be locked     */
  } PrefParseState;

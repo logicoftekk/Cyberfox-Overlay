@@ -226,9 +226,9 @@ diff --git a/netwerk/dns/moz.build b/netwerk/dns/moz.build
      CXXFLAGS += CONFIG['MOZ_ICU_CFLAGS']
      CFLAGS += CONFIG['MOZ_ICU_CFLAGS']
      LOCAL_INCLUDES += CONFIG['MOZ_ICU_INCLUDES']
-diff --git a/configure.in b/configure.in
---- a/configure.in
-+++ b/configure.in
+diff --git a/old-configure.in b/old-configure.in
+--- a/old-configure.in
++++ b/old-configure.in
 @@ -6425,16 +6425,59 @@ if test "$USE_FC_FREETYPE"; then
          else
              FT2_CFLAGS="$FT2_CFLAGS $_FONTCONFIG_CFLAGS"

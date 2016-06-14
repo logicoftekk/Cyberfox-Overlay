@@ -1,5 +1,5 @@
---- a/js/src/configure.in
-+++ b/js/src/configure.in
+--- a/js/src/old-configure.in
++++ b/js/src/old-configure.in
 @@ -958,7 +958,7 @@
      CPU_ARCH=s390x
      ;;
