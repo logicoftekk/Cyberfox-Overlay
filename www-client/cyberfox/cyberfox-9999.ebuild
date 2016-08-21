@@ -11,7 +11,7 @@ MOZCONFIG_OPTIONAL_GTK2ONLY=1
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.47 multilib pax-utils fdo-mime autotools virtualx git-r3
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.48 multilib pax-utils fdo-mime autotools virtualx git-r3
 
 DESCRIPTION="Cyberfox Web Browser"
 HOMEPAGE="http://8pecxstudios.com/cyberfox-web-browser"
@@ -24,13 +24,13 @@ IUSE="bindist hardened pgo unity selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
-SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_47.0+build3-0ubuntu1.debian.tar.xz )"
+SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_48.0+build2-0ubuntu1.debian.tar.xz )"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
 
 # Mesa 7.10 needed for WebGL + bugfixes
 RDEPEND="
-	>=dev-libs/nss-3.23
+	>=dev-libs/nss-3.24
 	>=dev-libs/nspr-4.12
 	selinux? ( sec-policy/selinux-mozilla )"
 
@@ -186,27 +186,15 @@ src_configure() {
 
 	# Config
 	mozconfig_annotate '' --enable-extensions="${MEXTENSIONS}"
-	mozconfig_annotate '' --disable-mailnews
 	mozconfig_annotate '' --enable-release
+	mozconfig_annotate '' --disable-rust
 	mozconfig_annotate '' --with-pthreads
 
 	# Disable unwanted features
-	mozconfig_annotate '' --disable-pay
-	mozconfig_annotate '' --disable-metro
 	mozconfig_annotate '' --disable-maintenance-service
-	mozconfig_annotate '' --disable-services-healthreport
-	mozconfig_annotate '' --disable-moz-services-healthreport
-	mozconfig_annotate '' --disable-moz_services_healthreport
-	mozconfig_annotate '' --disable-data-reporting
-	mozconfig_annotate '' --disable-telemetry-reporting
-	mozconfig_annotate '' --disable-auto-deps
 	mozconfig_annotate '' --disable-ipdl-tests
 	mozconfig_annotate '' --disable-update-channel
 	mozconfig_annotate '' --disable-update-packaging
-	mozconfig_annotate '' --enable-debugger-info-modules=no
-	mozconfig_annotate '' --disable-debugger-info-modules
-	mozconfig_annotate '' --disable-mochitest
-	mozconfig_annotate '' --disable-mochitests
 	mozconfig_annotate '' --disable-accessibility
 	mozconfig_annotate '' --disable-parental-controls
 	mozconfig_annotate '' --disable-elf-hack
@@ -217,6 +205,7 @@ src_configure() {
 	fi
 
 	echo "mk_add_options MOZ_OBJDIR=${BUILD_OBJ_DIR}" >> "${S}"/.mozconfig
+	echo "mk_add_options XARGS=/usr/bin/xargs" >> "${S}"/.mozconfig
 
 	# Finalize and report settings
 	mozconfig_final
