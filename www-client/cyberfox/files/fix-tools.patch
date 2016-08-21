@@ -28,12 +28,3 @@ index 203b15d..08a270a 100644
  #ifdef ANDROID
  #include <android/log.h>
  #else
-@@ -60,7 +62,7 @@
- 
- // We need a definition of gettid(), but glibc doesn't provide a
- // wrapper for it.
--#if defined(__GLIBC__)
-+#if defined(__linux__)
- #include <unistd.h>
- #include <sys/syscall.h>
- static inline pid_t gettid()

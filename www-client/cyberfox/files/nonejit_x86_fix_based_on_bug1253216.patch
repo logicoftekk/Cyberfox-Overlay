@@ -1,9 +1,9 @@
---- a/js/src/jit/AtomicOperations.h	2016-03-12 13:42:27.914524205 -0500
-+++ b/js/src/jit/AtomicOperations.h	2016-03-12 13:42:15.644573630 -0500
-@@ -311,6 +311,8 @@
-   // top of the file for more guidance.
- # if defined(__ppc64__) || defined(__PPC64__) || defined(__ppc64le__) || defined(__PPC64LE__)
+--- a/js/src/jit/AtomicOperations.h	2016-06-06 16:15:02.000000000 -0400
++++ b/js/src/jit/AtomicOperations.h	2016-06-27 13:40:39.261569170 -0400
+@@ -339,6 +339,8 @@
  #  include "jit/none/AtomicOperations-ppc.h"
+ # elif defined(__aarch64__)
+ #  include "jit/arm64/AtomicOperations-arm64.h"
 +# elif defined(__i386__) || defined(__x86_64__)
 +#  include "jit/x86-shared/AtomicOperations-x86-shared.h"
  # else

@@ -1,0 +1,15 @@
+--- a/build/moz.configure/old.configure	2016-06-06 16:14:57.000000000 -0400
++++ b/build/moz.configure/old.configure	2016-06-28 12:46:22.023117269 -0400
+@@ -154,6 +154,12 @@
+ 
+ 
+ @old_configure_options(
++    '--bindir',
++    '--libexecdir',
++    '--libdir',
++    '--includedir',
++    '--datadir',
++    '--mandir',
+     '--cache-file',
+     '--enable-accessibility',
+     '--enable-address-sanitizer',
