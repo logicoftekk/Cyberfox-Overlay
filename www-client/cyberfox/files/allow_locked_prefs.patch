@@ -21,10 +21,10 @@ diff -u a/modules/libpref/prefapi.cpp b/modules/libpref/prefapi.cpp
 +    if (isLocked)
 +        PREF_LockPref(pref, true);
  }
-diff -u a/modules/libpref/prefapi.h b/modules/libpref/prefapi.h
+diff -u8 a/modules/libpref/prefapi.h b/modules/libpref/prefapi.h
 --- a/modules/libpref/prefapi.h
 +++ b/modules/libpref/prefapi.h
-@@ -181,14 +181,15 @@ nsresult PREF_UnregisterCallback( const char* domain,
+@@ -238,17 +238,18 @@
  /*
   * Used by nsPrefService as the callback function of the 'pref' parser
   */
@@ -37,10 +37,13 @@ diff -u a/modules/libpref/prefapi.h b/modules/libpref/prefapi.h
 +                          bool        isStickyDefault,
 +                          bool        isLocked);
  
- #ifdef __cplusplus
- }
- #endif
- #endif
+ 
+ /*
+  * Callback whenever we change a preference
+  */
+ typedef void (*PrefsDirtyFunc) ();
+ void PREF_SetDirtyCallback(PrefsDirtyFunc);
+ 
 diff -u a/modules/libpref/prefread.cpp b/modules/libpref/prefread.cpp
 --- a/modules/libpref/prefread.cpp	2016-05-12 13:05:06.000000000 -0400
 +++ b/modules/libpref/prefread.cpp	2016-06-01 10:41:23.629568981 -0400
