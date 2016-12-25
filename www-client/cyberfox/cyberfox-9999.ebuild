@@ -6,31 +6,28 @@ EAPI=6
 VIRTUALX_REQUIRED="pgo"
 WANT_AUTOCONF="2.1"
 
-#MOZCONFIG_OPTIONAL_QT5=1 -- fails to build so leave it off until the code can be patched
 MOZCONFIG_OPTIONAL_GTK2ONLY=1
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.48 multilib pax-utils fdo-mime autotools virtualx git-r3
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.49 pax-utils fdo-mime autotools virtualx git-r3
 
 DESCRIPTION="Cyberfox Web Browser"
 HOMEPAGE="http://8pecxstudios.com/cyberfox-web-browser"
 
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="bindist hardened pgo unity selinux +gmp-autoupdate test"
+IUSE="bindist hardened +hwaccel jack pgo selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
-SRC_URI="unity?	( http://security.ubuntu.com/ubuntu/pool/main/f/firefox/firefox_48.0+build2-0ubuntu1.debian.tar.xz )"
+SRC_URI=""
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
-
-# Mesa 7.10 needed for WebGL + bugfixes
 RDEPEND="
-	>=dev-libs/nss-3.24
+	>=dev-libs/nss-3.26.2
 	>=dev-libs/nspr-4.12
 	selinux? ( sec-policy/selinux-mozilla )"
 
@@ -42,6 +39,11 @@ DEPEND="${RDEPEND}
 QA_PRESTRIPPED="usr/lib*/${PN}/cyberfox"
 
 BUILD_OBJ_DIR="${S}/cf"
+
+# dependencies newer than specified in the eclass
+RDEPEND="${RDEPEND}
+	>=media-libs/libpng-1.6.23
+	"
 
 pkg_setup() {
 	moz_pkgsetup
@@ -93,9 +95,6 @@ src_unpack() {
 
 src_prepare() {
 	# Apply our patches
-	if use unity ; then
-		epatch "${WORKDIR}/debian/patches/unity-menubar.patch"
-	fi
 
 	eapply "${FILESDIR}"
 
@@ -109,6 +108,16 @@ src_prepare() {
 	if use debug ; then
 		sed -i -e "s:GNOME_DISABLE_CRASH_DIALOG=1:GNOME_DISABLE_CRASH_DIALOG=0:g" \
 			"${S}"/build/unix/run-mozilla.sh || die "sed failed!"
+	fi
+
+	# Drop -Wl,--as-needed related manipulation for ia64 as it causes ld sefgaults, bug #582432
+	if use ia64 ; then
+		sed -i \
+		-e '/^OS_LIBS += no_as_needed/d' \
+		-e '/^OS_LIBS += as_needed/d' \
+		"${S}"/widget/gtk/mozgtk/gtk2/moz.build \
+		"${S}"/widget/gtk/mozgtk/gtk3/moz.build \
+		|| die "sed failed to drop --as-needed for ia64"
 	fi
 
 	# Ensure that our plugins dir is enabled as default
@@ -127,7 +136,7 @@ src_prepare() {
 	sed '/^MOZ_PKG_FATAL_WARNINGS/s@= 1@= 0@' \
 		-i "${S}"/browser/installer/Makefile.in || die
 
-	# Don't error out when there's no files to be removed
+	# Don't error out when there's no files to be removed:
 	sed 's@\(xargs rm\)$@\1 -f@' \
 		-i "${S}"/toolkit/mozapps/installer/packager.mk || die
 
@@ -161,6 +170,9 @@ src_configure() {
 	mozconfig_init
 	mozconfig_config
 
+	# enable JACK, bug 600002
+	mozconfig_use_enable jack
+
 	# It doesn't compile on alpha without this LDFLAGS
 	use alpha && append-ldflags "-Wl,--no-relax"
 
@@ -193,15 +205,13 @@ src_configure() {
 	# Disable unwanted features
 	mozconfig_annotate '' --disable-maintenance-service
 	mozconfig_annotate '' --disable-ipdl-tests
-	mozconfig_annotate '' --disable-update-channel
-	mozconfig_annotate '' --disable-update-packaging
 	mozconfig_annotate '' --disable-accessibility
 	mozconfig_annotate '' --disable-parental-controls
 	mozconfig_annotate '' --disable-elf-hack
 
 	# Allow for a proper pgo build
 	if use pgo; then
-		echo "mk_add_options PROFILE_GEN_SCRIPT='\$(PYTHON) \$(OBJDIR)/_profile/pgo/profileserver.py'" >> "${S}"/.mozconfig
+		echo "mk_add_options PROFILE_GEN_SCRIPT='EXTRA_TEST_ARGS=10 \$(MAKE) -C \$(MOZ_OBJDIR) pgo-profile-run'" >> "${S}"/.mozconfig
 	fi
 
 	echo "mk_add_options MOZ_OBJDIR=${BUILD_OBJ_DIR}" >> "${S}"/.mozconfig
@@ -262,6 +272,15 @@ src_install() {
 	insinto "${MOZILLA_FIVE_HOME}"/defaults/pref/
 	doins "${FILESDIR}/local-settings.js"
 	cp "${FILESDIR}/gentoo-default-prefs.js" "${S}/gentoo-default-prefs.js"
+	# Augment this with hwaccel prefs
+	if use hwaccel ; then
+		echo "pref(\"layers.acceleration.force-enabled\", true);" >> \
+			"${S}/gentoo-default-prefs.js" \
+			|| die
+		echo "pref(\"webgl.force-enabled\", true);" >> \
+			"${S}/gentoo-default-prefs.js" \
+			|| die
+	fi
 
 	local plugin
 	use gmp-autoupdate || for plugin in \
@@ -301,7 +320,7 @@ src_install() {
 			|| die
 	fi
 
-	# Required in order to use plugins and even run cyberfox on hardened.
+	# Required in order to use plugins and even run cyberfox on hardened, with jit useflag.
 	if use jit; then
 		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{cyberfox,cyberfox-bin,plugin-container}
 	else
