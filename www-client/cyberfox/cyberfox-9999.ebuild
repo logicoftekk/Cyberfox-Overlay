@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -19,7 +19,7 @@ KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-lin
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="bindist hardened +hwaccel jack pgo selinux +gmp-autoupdate test"
+IUSE="bindist hardened hwaccel jack pgo rust selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 EGIT_REPO_URI="https://github.com/InternalError503/cyberfox.git"
@@ -27,23 +27,22 @@ SRC_URI=""
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
 RDEPEND="
-	>=dev-libs/nss-3.26.2
-	>=dev-libs/nspr-4.12
+	jack? ( virtual/jack )
+	>=dev-libs/nss-3.28.1
+	>=dev-libs/nspr-4.13.1
+	>=media-libs/libpng-1.6.25
+	system-sqlite? ( >=dev-db/sqlite-3.14.1:3[secure-delete,debug=] )
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
 	pgo? ( >=sys-devel/gcc-4.5 )
+	rust? ( dev-lang/rust )
 	amd64? ( ${ASM_DEPEND} virtual/opengl )
 	x86? ( ${ASM_DEPEND} virtual/opengl )"
 
 QA_PRESTRIPPED="usr/lib*/${PN}/cyberfox"
 
 BUILD_OBJ_DIR="${S}/cf"
-
-# dependencies newer than specified in the eclass
-RDEPEND="${RDEPEND}
-	>=media-libs/libpng-1.6.23
-	"
 
 pkg_setup() {
 	moz_pkgsetup
@@ -69,6 +68,11 @@ pkg_setup() {
 		einfo
 		ewarn "You will do a double build for profile guided optimization."
 		ewarn "This will result in your build taking at least twice as long as before."
+	fi
+
+	if use rust; then
+		einfo
+		ewarn "This is very experimental, should only be used by those developing firefox."
 	fi
 }
 
@@ -248,7 +252,7 @@ src_compile() {
 			fi
 		fi
 		shopt -u nullglob
-		addpredict "${cards}"
+		[[ -n "${cards}" ]] && addpredict "${cards}"
 
 		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
 		virtx emake -f client.mk profiledbuild || die "virtx emake failed"
