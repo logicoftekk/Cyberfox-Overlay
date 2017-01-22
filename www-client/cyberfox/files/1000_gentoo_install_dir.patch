@@ -1,7 +1,12 @@
-diff -urN a/config/baseconfig.mk b/config/baseconfig.mk
---- a/config/baseconfig.mk	2012-09-19 08:53:16.000000000 -0500
-+++ b/config/baseconfig.mk	2012-09-24 14:50:06.839354619 -0500
-@@ -1,14 +1,14 @@
+From: Jory A. Pratt <anarchy@gentoo.org>
+
+Install application into $(MOZ_APP_NAME) instead of the upstream default
+of $(MOZ_APP_NAME)-$(MOZ_APP_VERSION)
+
+diff --git a/config/baseconfig.mk b/config/baseconfig.mk
+--- a/config/baseconfig.mk
++++ b/config/baseconfig.mk
+@@ -1,16 +1,16 @@
  # This file is normally included by autoconf.mk, but it is also used
  # directly in python/mozbuild/mozbuild/base.py for gmake validation.
  # We thus use INCLUDED_AUTOCONF_MK to enable/disable some parts depending
@@ -19,4 +24,6 @@ diff -urN a/config/baseconfig.mk b/config/baseconfig.mk
  else
  DIST = $(DEPTH)/dist
  endif
+ ABS_DIST = $(topobjdir)/dist
  
+ # We do magic with OBJ_SUFFIX in config.mk, the following ensures we don't

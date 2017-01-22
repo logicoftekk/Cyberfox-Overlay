@@ -1,0 +1,34 @@
+From: Jory A. Pratt <anarchy@gentoo.org>
+
+Use C99 math isfinite, finite has been depreciated and all modern libc
+implementations use isfinite.
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=1320560
+
+diff --git a/xpcom/ds/nsMathUtils.h b/xpcom/ds/nsMathUtils.h
+--- a/xpcom/ds/nsMathUtils.h
++++ b/xpcom/ds/nsMathUtils.h
+@@ -98,22 +98,18 @@ NS_hypot(double aNum1, double aNum2)
+  * NaN value).
+  */
+ inline bool
+ NS_finite(double aNum)
+ {
+ #ifdef WIN32
+   // NOTE: '!!' casts an int to bool without spamming MSVC warning C4800.
+   return !!_finite(aNum);
+-#elif defined(XP_DARWIN)
+-  // Darwin has deprecated |finite| and recommends |isfinite|. The former is
+-  // not present in the iOS SDK.
+-  return std::isfinite(aNum);
+ #else
+-  return finite(aNum);
++  return std::isfinite(aNum);
+ #endif
+ }
+ 
+ /**
+  * Returns the result of the modulo of x by y using a floored division.
+  * fmod(x, y) is using a truncated division.
+  * The main difference is that the result of this method will have the sign of
+  * y while the result of fmod(x, y) will have the sign of x.

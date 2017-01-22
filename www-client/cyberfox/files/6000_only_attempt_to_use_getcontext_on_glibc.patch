@@ -1,19 +1,22 @@
-From 83741a38b3c7837dfe679ccbbdf2c5b048ee58a2 Mon Sep 17 00:00:00 2001
-From: "Jory A. Pratt" <anarchy@gentoo.org>
-Date: Sun, 3 Jan 2016 20:00:55 -0600
-Subject: [PATCH] getcontext is only avaliable on GLIBC based system, it is not
- avaliable on other libc systems at this time.
+>From 4dd0c5563d285210ca60b2cf7e9b3a4b14fbce64 Mon Sep 17 00:00:00 2001
+From: Samuel Holland <samuel@sholland.org>
+Date: Sun, 8 Jan 2017 19:12:08 -0600
+Subject: [PATCH 1/4] Only attempt to use getcontext() on glibc
 
-Signed-off-by: Jory A. Pratt <anarchy@gentoo.org>
+musl does not provide getcontext(). Since this function does nothing
+when getcontext returns failure anyway, stub it out for non-glibc (e.g.
+musl-based) environments.
+
+Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
  tools/profiler/core/platform-linux.cc | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/tools/profiler/core/platform-linux.cc b/tools/profiler/core/platform-linux.cc
-index caf7326..200d92c 100644
+index 148acbc83..4908c5370 100644
 --- a/tools/profiler/core/platform-linux.cc
 +++ b/tools/profiler/core/platform-linux.cc
-@@ -710,11 +710,13 @@ void OS::Startup() {
+@@ -620,11 +620,13 @@ void OS::Startup() {
  void TickSample::PopulateContext(void* aContext)
  {
    MOZ_ASSERT(aContext);
@@ -28,5 +31,5 @@ index caf7326..200d92c 100644
  
  void OS::SleepMicro(int microseconds)
 -- 
-2.6.4
+2.11.0
 

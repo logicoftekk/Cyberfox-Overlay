@@ -1,6 +1,35 @@
---- a/config/Makefile.in	2016-06-06 16:14:57.000000000 -0400
-+++ b/config/Makefile.in	2016-06-27 13:48:05.161096423 -0400
-@@ -44,16 +44,18 @@
+From: Jan Beich <jbeich@FreeBSD.org>
+
+Add ability to use system-harfbuzz instead of bundled.
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=847568
+
+diff --git a/build/moz.configure/old.configure b/build/moz.configure/old.configure
+--- a/build/moz.configure/old.configure
++++ b/build/moz.configure/old.configure
+@@ -279,16 +279,18 @@ def old_configure_options(*options):
+     '--with-nspr-prefix',
+     '--with-nss-exec-prefix',
+     '--with-nss-prefix',
+     '--with-pthreads',
+     '--with-qemu-exe',
+     '--with-sixgill',
+     '--with-soft-float',
+     '--with-system-bz2',
++    '--with-system-graphite2',
++    '--with-system-harfbuzz',
+     '--with-system-icu',
+     '--with-system-jpeg',
+     '--with-system-libevent',
+     '--with-system-libvpx',
+     '--with-system-nspr',
+     '--with-system-nss',
+     '--with-system-png',
+     '--with-system-zlib',
+diff --git a/config/Makefile.in b/config/Makefile.in
+--- a/config/Makefile.in
++++ b/config/Makefile.in
+@@ -44,16 +44,18 @@ export:: $(export-preqs)
  		-DMOZ_SYSTEM_HUNSPELL=$(MOZ_SYSTEM_HUNSPELL) \
  		-DMOZ_SYSTEM_BZ2=$(MOZ_SYSTEM_BZ2) \
  		-DMOZ_SYSTEM_ZLIB=$(MOZ_SYSTEM_ZLIB) \
@@ -19,9 +48,10 @@
  
  ifdef WRAP_STL_INCLUDES
  ifdef GNU_CXX
+diff --git a/config/system-headers b/config/system-headers
 --- a/config/system-headers
 +++ b/config/system-headers
-@@ -1340,8 +1340,16 @@ unicode/udatpg.h
+@@ -1327,8 +1327,16 @@ unicode/udatpg.h
  unicode/uenum.h
  unicode/unorm.h
  unicode/unum.h
@@ -38,8 +68,23 @@
 +harfbuzz/hb-ot.h
 +harfbuzz/hb.h
 +#endif
---- a/gfx/graphite2/moz-gr-update.sh	2016-06-27 15:44:54.734282695 -0400
-+++ b/gfx/graphite2/moz-gr-update.sh	2016-06-27 15:45:49.624228377 -0400
+diff --git a/extensions/spellcheck/hunspell/glue/moz.build b/extensions/spellcheck/hunspell/glue/moz.build
+--- a/extensions/spellcheck/hunspell/glue/moz.build
++++ b/extensions/spellcheck/hunspell/glue/moz.build
+@@ -31,9 +31,9 @@ IPDL_SOURCES = [
+ 
+ EXPORTS.mozilla += [
+      'RemoteSpellCheckEngineChild.h',
+      'RemoteSpellCheckEngineParent.h',
+ ]
+ 
+ # This variable is referenced in configure.in.  Make sure to change that file
+ # too if you need to change this variable.
+-DEFINES['HUNSPELL_STATIC'] = True
++DEFINES['HUNSPELL_STATIC'] = not CONFIG['MOZ_SYSTEM_HUNSPELL']
+diff --git a/gfx/graphite2/moz-gr-update.sh b/gfx/graphite2/moz-gr-update.sh
+--- a/gfx/graphite2/moz-gr-update.sh
++++ b/gfx/graphite2/moz-gr-update.sh
 @@ -1,11 +1,12 @@
  #!/bin/bash
  
@@ -53,7 +98,7 @@
  #
  #    ./gfx/graphite2/moz-gr-update.sh RELEASE
  #
-@@ -32,22 +33,26 @@
+@@ -32,22 +33,26 @@ echo "This directory contains the Graphi
  echo "$TARBALL" >> gfx/graphite2/README.mozilla
  echo ""
  echo "See" $0 "for update procedure." >> gfx/graphite2/README.mozilla
@@ -81,9 +126,67 @@
  
  echo
  echo Now use hg commands to create a patch for the mozilla tree.
---- a/old-configure.in	2016-06-27 15:58:22.753483108 -0400
-+++ b/old-configure.in	2016-06-27 15:59:47.073399669 -0400
-@@ -6311,16 +6311,61 @@
+diff --git a/gfx/moz.build b/gfx/moz.build
+--- a/gfx/moz.build
++++ b/gfx/moz.build
+@@ -2,26 +2,30 @@
+ # vim: set filetype=python:
+ # This Source Code Form is subject to the terms of the Mozilla Public
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
+ if CONFIG['MOZ_TREE_CAIRO']:
+     DIRS += ['cairo']
+ 
++if not CONFIG['MOZ_SYSTEM_GRAPHITE2']:
++    DIRS += ['graphite2/src' ]
++
++if not CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    DIRS += ['harfbuzz/src']
++
+ DIRS += [
+     '2d',
+     'ycbcr',
+     'angle',
+     'src',
+     'qcms',
+     'gl',
+     'layers',
+-    'graphite2/src',
+-    'harfbuzz/src',
+     'ots/src',
+     'thebes',
+     'ipc',
+     'vr',
+     'config',
+ ]
+ 
+ if CONFIG['MOZ_ENABLE_SKIA']:
+diff --git a/gfx/thebes/moz.build b/gfx/thebes/moz.build
+--- a/gfx/thebes/moz.build
++++ b/gfx/thebes/moz.build
+@@ -281,13 +281,16 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('and
+     CXXFLAGS += CONFIG['CAIRO_FT_CFLAGS']
+ 
+ if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('gtk2', 'gtk3'):
+     CXXFLAGS += CONFIG['MOZ_PANGO_CFLAGS']
+ 
+ LOCAL_INCLUDES += CONFIG['SKIA_INCLUDES']
+ LOCAL_INCLUDES += ['/media/libyuv/include']
+ 
+-DEFINES['GRAPHITE2_STATIC'] = True
++if CONFIG['MOZ_SYSTEM_GRAPHITE2']:
++    CXXFLAGS += CONFIG['MOZ_GRAPHITE2_CFLAGS']
++else:
++    DEFINES['GRAPHITE2_STATIC'] = True
+ 
+ if CONFIG['CLANG_CXX']:
+     # Suppress warnings from Skia header files.
+     SOURCES['gfxPlatform.cpp'].flags += ['-Wno-implicit-fallthrough']
+diff --git a/old-configure.in b/old-configure.in
+--- a/old-configure.in
++++ b/old-configure.in
+@@ -5215,16 +5215,61 @@ if test "$USE_FC_FREETYPE"; then
          else
              FT2_CFLAGS="$FT2_CFLAGS $_FONTCONFIG_CFLAGS"
              FT2_LIBS="$FT2_LIBS $_FONTCONFIG_LIBS"
@@ -145,9 +248,10 @@
  [  --enable-system-cairo   Use system cairo (located with pkgconfig)],
  MOZ_TREE_CAIRO=,
  MOZ_TREE_CAIRO=1 )
---- a/toolkit/library/moz.build	2016-06-27 16:01:38.693289157 -0400
-+++ b/toolkit/library/moz.build	2016-06-27 16:01:50.413277443 -0400
-@@ -230,16 +230,22 @@
+diff --git a/toolkit/library/moz.build b/toolkit/library/moz.build
+--- a/toolkit/library/moz.build
++++ b/toolkit/library/moz.build
+@@ -241,16 +241,22 @@ if CONFIG['MOZ_SYSTEM_LIBVPX']:
      OS_LIBS += CONFIG['MOZ_LIBVPX_LIBS']
  
  if not CONFIG['MOZ_TREE_PIXMAN']:
@@ -170,78 +274,3 @@
          'GLESv2',
      ]
  
---- a/build/moz.configure/old.configure	2016-06-28 12:49:10.152997194 -0400
-+++ b/build/moz.configure/old.configure	2016-06-28 12:54:11.052774364 -0400
-@@ -320,6 +320,8 @@
-     '--with-sixgill',
-     '--with-soft-float',
-     '--with-system-bz2',
-+    '--with-system-graphite2',
-+    '--with-system-harfbuzz',
-     '--with-system-icu',
-     '--with-system-jpeg',
-     '--with-system-libevent',
---- a/extensions/spellcheck/hunspell/glue/moz.build
-+++ b/extensions/spellcheck/hunspell/glue/moz.build
-@@ -38,4 +38,4 @@ if CONFIG['GNU_CXX']:
- 
- # This variable is referenced in configure.in.  Make sure to change that file
- # too if you need to change this variable.
--DEFINES['HUNSPELL_STATIC'] = True
-+DEFINES['HUNSPELL_STATIC'] = not CONFIG['MOZ_SYSTEM_HUNSPELL']
-
---- a/gfx/moz.build	2016-08-01 12:14:28.000000000 -0400
-+++ b/gfx/moz.build	2016-08-31 16:07:28.908707981 -0400
-@@ -2,26 +2,30 @@
- # vim: set filetype=python:
- # This Source Code Form is subject to the terms of the Mozilla Public
- # License, v. 2.0. If a copy of the MPL was not distributed with this
- # file, You can obtain one at http://mozilla.org/MPL/2.0/.
- 
- if CONFIG['MOZ_TREE_CAIRO']:
-     DIRS += ['cairo']
- 
-+if not CONFIG['MOZ_SYSTEM_GRAPHITE2']:
-+    DIRS += ['graphite2/src' ]
-+
-+if not CONFIG['MOZ_SYSTEM_HARFBUZZ']:
-+    DIRS += ['harfbuzz/src']
-+
- DIRS += [
-     '2d',
-     'ycbcr',
-     'angle',
-     'src',
-     'qcms',
-     'gl',
-     'layers',
--    'graphite2/src',
--    'harfbuzz/src',
-     'ots/src',
-     'thebes',
-     'ipc',
-     'vr',
-     'config',
- ]
- 
- if CONFIG['MOZ_ENABLE_SKIA']:
---- a/gfx/thebes/moz.build	2016-09-19 12:19:30.000000000 -0400
-+++ b/gfx/thebes/moz.build	2016-10-11 13:17:56.861237732 -0400
-@@ -284,13 +284,16 @@
-     # top of the android java runtime.
-     DEFINES['MOZ_USING_ANDROID_JAVA_WIDGETS'] = True
- 
- if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('gtk2', 'gtk3'):
-     CXXFLAGS += CONFIG['MOZ_PANGO_CFLAGS']
- 
- LOCAL_INCLUDES += CONFIG['SKIA_INCLUDES']
- 
--DEFINES['GRAPHITE2_STATIC'] = True
-+if CONFIG['MOZ_SYSTEM_GRAPHITE2']:
-+    CXXFLAGS += CONFIG['MOZ_GRAPHITE2_CFLAGS']
-+else:
-+    DEFINES['GRAPHITE2_STATIC'] = True
- 
- if CONFIG['CLANG_CXX']:
-     # Suppress warnings from Skia header files.
-     SOURCES['gfxPlatform.cpp'].flags += ['-Wno-implicit-fallthrough']

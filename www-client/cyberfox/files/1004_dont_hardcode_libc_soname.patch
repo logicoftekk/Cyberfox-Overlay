@@ -1,0 +1,80 @@
+From:  Ian Stakenvicius <axs@gentoo.org>
+
+a64 and other platforms can have a different libc from the libc.so.6
+used on amd64/x86,
+this patch addresses build system failures due to the python scripts not
+finding the
+correct libc soname.
+
+(reworked to inherit ctypes.util to fix python errors, for mozilla-46)
+
+https://bugs.gentoo.org/show_bug.cgi?id=557956
+
+diff --git a/testing/mochitest/runtests.py b/testing/mochitest/runtests.py
+--- a/testing/mochitest/runtests.py
++++ b/testing/mochitest/runtests.py
+@@ -8,17 +8,17 @@ Runs the Mochitest test harness.
+ 
+ from __future__ import with_statement
+ import os
+ import sys
+ SCRIPT_DIR = os.path.abspath(os.path.realpath(os.path.dirname(__file__)))
+ sys.path.insert(0, SCRIPT_DIR)
+ 
+ from argparse import Namespace
+-import ctypes
++import ctypes.util
+ import glob
+ import json
+ import mozcrash
+ import mozdebug
+ import mozinfo
+ import mozprocess
+ import mozrunner
+ import numbers
+@@ -1378,17 +1378,17 @@ def checkAndConfigureV4l2loopback(device
+     Determine if a given device path is a v4l2loopback device, and if so
+     toggle a few settings on it via fcntl. Very linux-specific.
+ 
+     Returns (status, device name) where status is a boolean.
+     '''
+     if not mozinfo.isLinux:
+         return False, ''
+ 
+-    libc = ctypes.cdll.LoadLibrary('libc.so.6')
++    libc = ctypes.cdll.LoadLibrary(ctypes.util.find_library('c'))
+     O_RDWR = 2
+     # These are from linux/videodev2.h
+ 
+     class v4l2_capability(ctypes.Structure):
+         _fields_ = [
+             ('driver', ctypes.c_char * 16),
+             ('card', ctypes.c_char * 32),
+             ('bus_info', ctypes.c_char * 32),
+diff --git a/testing/mozbase/mozinfo/mozinfo/mozinfo.py b/testing/mozbase/mozinfo/mozinfo/mozinfo.py
+--- a/testing/mozbase/mozinfo/mozinfo/mozinfo.py
++++ b/testing/mozbase/mozinfo/mozinfo/mozinfo.py
+@@ -136,21 +136,21 @@ elif processor.upper() == "AMD64":
+ elif processor == "Power Macintosh":
+     processor = "ppc"
+ bits = re.search('(\d+)bit', bits).group(1)
+ info.update({'processor': processor,
+              'bits': int(bits),
+             })
+ 
+ if info['os'] == 'linux':
+-    import ctypes
++    import ctypes.util
+     import errno
+     PR_SET_SECCOMP = 22
+     SECCOMP_MODE_FILTER = 2
+-    ctypes.CDLL("libc.so.6", use_errno=True).prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, 0)
++    ctypes.CDLL(ctypes.util.find_library('c'), use_errno=True).prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, 0)
+     info['has_sandbox'] = ctypes.get_errno() == errno.EFAULT
+ else:
+     info['has_sandbox'] = True
+ 
+ # standard value of choices, for easy inspection
+ choices = {'os': ['linux', 'bsd', 'win', 'mac', 'unix'],
+            'bits': [32, 64],
+            'processor': ['x86', 'x86_64', 'ppc']}
