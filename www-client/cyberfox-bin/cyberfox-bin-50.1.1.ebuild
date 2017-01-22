@@ -7,16 +7,14 @@ EAPI="5"
 inherit eutils multilib pax-utils fdo-mime gnome2-utils nsplugins
 
 DESCRIPTION="Cyberfox Web Browser"
-SRC_URI="
-	!unity?	( mirror://sourceforge/project/cyberfox/Zipped%20Format/Cyberfox-${PV}.en-US.linux-x86_64.tar.bz2 )
-	unity?	( mirror://sourceforge/project/cyberfox/Zipped%20Format/Cyberfox-${PV}.en-US.linux-x86_64-Unity-Edition.tar.bz2 )"
+SRC_URI="( mirror://sourceforge/project/cyberfox/Zipped%20Format/Cyberfox-${PV}.en-US.linux-x86_64.tar.bz2 )"
 HOMEPAGE="https://cyberfox.8pecxstudios.com/"
 RESTRICT="strip mirror"
 
 KEYWORDS="-* ~amd64"
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="selinux startup-notification unity"
+IUSE="selinux startup-notification"
 
 DEPEND="app-arch/unzip"
 RDEPEND="dev-libs/atk
@@ -113,6 +111,7 @@ pkg_preinst() {
 }
 
 pkg_postinst() {
+	einfo "For HTML5 video you need media-video/ffmpeg installed."
 	# Update mimedb for the new .desktop file
 	fdo-mime_desktop_database_update
 	gnome2_icon_cache_update
