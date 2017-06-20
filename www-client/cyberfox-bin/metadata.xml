@@ -4,7 +4,4 @@
 <maintainer>
 	<name>logicoftekk</name>
 </maintainer>
-<use>
-	<flag name="unity">Unity menu bar</flag>
-</use>
 </pkgmetadata>
